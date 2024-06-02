@@ -41,3 +41,30 @@ def PT_Quant(model):
     quantized_model = torch.quantization.quantize_dynamic(model.to(device), {torch.nn.Linear}, dtype=torch.float16)
     return quantized_model
 
+
+def asym_fp_quantization(model):
+    def afpq_quantization(tensor, bits=4):
+        qmin = -(2 ** (bits - 1))
+        qmax = (2 ** (bits - 1)) - 1
+        pos_values = tensor[tensor > 0]
+        neg_values = tensor[tensor < 0]
+        pos_scale = pos_values.max().item() / qmax if pos_values.numel() > 0 else 1.0
+        neg_scale = neg_values.min().item() / qmin if neg_values.numel() > 0 else 1.0
+        pos_tensor = tensor.clamp(min=0) / pos_scale
+        neg_tensor = tensor.clamp(max=0) / neg_scale
+        quantized_tensor = pos_tensor + neg_tensor
+        quantized_tensor = quantized_tensor.round().clamp(qmin, qmax).to(torch.int8)
+        
+        return quantized_tensor, pos_scale, neg_scale
+        
+    quantized_model_state_dict = {}
+    scales = {}
+    for name, param in model.named_parameters():
+        quantized_data, pos_scale, neg_scale = afpq_quantization(param.data, bits=4)
+        quantized_model_state_dict[name] = quantized_data
+        scales[f"{name.replace('.', '_')}_pos_scale"] = torch.tensor(pos_scale, dtype=torch.float32)
+        scales[f"{name.replace('.', '_')}_neg_scale"] = torch.tensor(neg_scale, dtype=torch.float32)
+
+    model.load_state_dict(quantized_model_state_dict)
+    model.scales = scales
+    return model
