@@ -10,10 +10,10 @@ This project focuses on the optimization of dynamic neural networks. Dynamic neu
 - [Installation](#installation)
 - [Usage](#usage)
 - [Experiments and Results](#experiments-and-results)
-  - [Understanding the LLMs](#experiment-1)
-  - [Observation : DistilBERT](#experiment-2)
-  - [Observation : Vision Transformer](#experiment-3)
-  - [Observation : DeBERTa](#experiment-4)
+  - [Understanding the LLMs](#understanding-the-llms)
+  - [Observation : DistilBERT](#DistilBERT)
+  - [Observation : Vision Transformer](#ViT)
+  - [Observation : DeBERTa](#DeBERTa)
 
 ## Installation
 
@@ -50,12 +50,14 @@ npm start
 
 ## Experiments and Results
 
-### Understanding the LLMs - [Understanding the LLMs](#experiment-1)
+### Understanding the LLMs 
 
 The Project uses three distinct Large Language Models to understand the effect of optimisation techniques on them.
 
 The LLMs used are as follows:
+
 ![Model Details](public/model_details.png)
+
 
 The Optimisation Techniques considered for analysis are as follows:
 - **Weight & Activation Quantization**: Precise quantization for reduced model size and improved speed
@@ -66,7 +68,8 @@ The Optimisation Techniques considered for analysis are as follows:
 - **Early Exiting**: Efficient inference by exiting when prediction confidence is high.
 - **ZeroQuant**: ZeroQuant and Extreme compression under the Deepspeed optimisations.
 
-### DistilBERT - [Observation : DistilBERT](#experiment-2)
+
+### DistilBERT 
 
 **Observation Table:**
 
@@ -75,13 +78,15 @@ The Optimisation Techniques considered for analysis are as follows:
 **Inference and System Usage:**
 
 - Inference metrics captured:
+
 ![DistilBERT Results](public/DistillBert_Inference_graph.png)
 
 - System Resource utilisations during the inference time:
+
 ![DistilBERT Results](public/DistillBert_System_Usage.png)
 
 
-### ViT - [Observation : Vision Transformer](#experiment-3)
+### ViT 
 
 **Observation Table:**
 
@@ -90,10 +95,11 @@ The Optimisation Techniques considered for analysis are as follows:
 **Inference and System Usage:**
 
 - System Resource utilisations during the inference time:
+
 ![ViT Results](public/ViT_Metrics.png)
 
 
-### DeBERTa - [Observation : DeBERTa](#experiment-4)
+### DeBERTa 
 
 **Observation Table:**
 
@@ -102,9 +108,11 @@ The Optimisation Techniques considered for analysis are as follows:
 **Inference and System Usage:**
 
 - Inference metrics captured:
+
 ![DeBERTa Results](public/DeBerta_inference.png)
 
 - System Resource utilisations during the inference time:
+
 ![DeBERTa Results](public/Deberta_system.png)
 
 
