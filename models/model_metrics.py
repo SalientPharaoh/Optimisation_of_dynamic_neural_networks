@@ -40,6 +40,36 @@ class ModelMetrics:
 
         self._print_summary(prof)
         return all_predictions, all_labels
+    
+    def run_inference_early_exit(self):
+        self.model.eval()
+        all_predictions = []
+        all_labels = []
+
+        with profile(
+            activities=[ProfilerActivity.CPU, ProfilerActivity.CUDA],
+            schedule=torch.profiler.schedule(wait=1, warmup=1, active=3, repeat=2),
+            on_trace_ready=torch.profiler.tensorboard_trace_handler('../log_dir'),
+            record_shapes=True,
+            profile_memory=True,
+            with_stack=True
+        ) as prof:
+            for batch in self.dataloader:
+                start_time = time.time()
+                with record_function("model_inference"):
+                    inputs = {key: batch[key].to(self.device) for key in ['input_ids', 'attention_mask']}
+                    labels = batch['labels'].to(self.device)
+                    with torch.no_grad():
+                        outputs = self.forward(input_ids=inputs['input_ids'], attention_mask=inputs['attention_mask'])
+                    predictions = torch.argmax(outputs, dim=-1).cpu().numpy().tolist()
+                    all_predictions.extend(predictions)
+                    all_labels.extend(labels.cpu().numpy().tolist())
+                end_time = time.time()
+                self.total_time += (end_time - start_time)
+                prof.step()
+        self._print_summary(prof)
+        return all_predictions, all_labels
+
 
     def _print_summary(self, prof):
         print(prof.key_averages().table(sort_by="cpu_time_total", row_limit=10))

@@ -1,5 +1,6 @@
 import torch
 from datasets import load_dataset
+from transformers import DataCollatorWithPadding
 
 class DatasetLoader:
     def __init__(self, tokenizer, dataset_name,subset=None):
@@ -7,12 +8,27 @@ class DatasetLoader:
         self.subset = subset
         self.dataset = self.load()
         self.tokenizer = tokenizer
+        self.data_collator = None
+        self.train_dataset = None
+        self.test_dataset = None
 
     def load(self):
         if(self.subset):
-            return load_dataset(self.dataset_name, self.subset, split='test')
+            return load_dataset(self.dataset_name, self.subset)
         else:
-            return load_dataset(self.dataset_name, split='test')
+            return load_dataset(self.dataset_name)
+    
+    def prepare_sst2(self):
+        def preprocess_function(examples):
+            return self.tokenizer(examples['sentence'], truncation=True, padding=True, max_length=128)
+
+        tokenized_datasets = self.dataset.map(preprocess_function, batched=True)
+        tokenized_datasets = tokenized_datasets.rename_column("label", "labels")
+        tokenized_datasets.set_format('torch', columns=['input_ids', 'attention_mask', 'labels'])
+        self.train_dataset = tokenized_datasets['train'].shuffle(seed=42).select(range(10000)) 
+        self.test_dataset = tokenized_datasets['validation'].shuffle(seed=42)
+        self.data_collator = DataCollatorWithPadding(self.tokenizer, return_tensors='pt')
+
 
     def prepare_data(self):
         tokenized_data = self.dataset.map(lambda x: self.tokenizer(x['sentence1'], x['sentence2'], truncation=True, padding=True), batched=True)

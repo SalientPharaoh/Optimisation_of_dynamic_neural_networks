@@ -1,5 +1,7 @@
 import torch.nn.utils.prune as prune
 import deepspeed
+import torch.optim as optim
+
 
 def unstructured_pruning(model, amount=0.3):
     parameters_to_prune = []

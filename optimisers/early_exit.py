@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import time
+import torch.optim as optim
+
 
 class DynamicEarlyExitModel(nn.Module):
     def __init__(self, model, num_classes=2, exit_threshold=0.8, num_exits=3):

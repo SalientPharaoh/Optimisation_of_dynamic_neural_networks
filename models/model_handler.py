@@ -6,7 +6,7 @@ import os
 root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(root_dir)
 
-from utils.scraper import Scraper
+from utils.scraper import HFModelScraper
 
 def load_class(module_name, class_name):
     module = importlib.import_module(module_name)
@@ -21,16 +21,16 @@ class ModelHandler:
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model_datacard = None
         self.model_class, self.tokenizer_class = self.get_model_details()
-    
+
     def get_model_details(self):
-        scraper = Scraper(self.model_name)
+        scraper = HFModelScraper(self.model_name)
         self.model_datacard = scraper.get_model_information()
         return scraper.get_model_classes()
 
 
-    def load_model(self, automodel_class = self.model_class, autotokenizer_class=self.tokenizer_class):
-        auto_model_class_name = automodel_class
-        auto_tokenizer_class_name = autotokenizer_class
+    def load_model(self):
+        auto_model_class_name = self.model_class
+        auto_tokenizer_class_name = self.tokenizer_class
         
         AutoModelClass = load_class('transformers', auto_model_class_name)
         AutoTokenizerClass = load_class('transformers', auto_tokenizer_class_name)

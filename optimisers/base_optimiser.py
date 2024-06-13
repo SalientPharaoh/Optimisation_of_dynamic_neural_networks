@@ -1,4 +1,6 @@
 import deepspeed
+import torch.optim as optim
+
 
 # Enabling full precision
 def fp16_optimisation(model, batch_size=1):

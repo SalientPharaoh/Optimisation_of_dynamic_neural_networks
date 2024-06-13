@@ -1,4 +1,5 @@
 import deepspeed
+import torch.optim as optim
 
 def extreme_compression(model, batch_size=1, quantization_bits=8):
     ds_config = {
@@ -15,7 +16,7 @@ def extreme_compression(model, batch_size=1, quantization_bits=8):
     return model_engine
 
 
-def zero_quant(model, batch_size=1, group_size=32):
+def zero_quant(model, batch_size=1, group_size=4):
     ds_config = {
         "train_micro_batch_size_per_gpu": batch_size,
         "zero_quant": {
