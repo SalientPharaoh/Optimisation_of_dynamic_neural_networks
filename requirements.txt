@@ -1,0 +1,12 @@
+datasets==2.19.2
+deepspeed==0.14.2
+Flask==2.3.2
+Flask_Cors==4.0.0
+huggingface_hub==0.22.2
+numpy==1.23.5
+psutil==5.9.8
+psutil==5.9.0
+Requests==2.32.3
+torch==2.2.2
+torchinfo==1.8.0
+wandb==0.17.1
